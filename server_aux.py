@@ -17,7 +17,7 @@ def parse_HTTP_message(http_message: bytes) -> dict:
 
 def create_HTTP_message(http_struct: dict) -> bytes:
     """dict -> bytes
-    takes a dict with message info and builds the http and returns it encoded"""
+    takes a dict with message info, builds the http message and returns it encoded"""
     http_msg = ""
 
     http_msg += f"{http_struct["startline"]}\r\n"
@@ -30,7 +30,6 @@ def create_HTTP_message(http_struct: dict) -> bytes:
     http_msg += http_struct["BODY"]
 
     return http_msg.encode()
-
 
 
 

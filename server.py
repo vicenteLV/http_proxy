@@ -19,7 +19,7 @@ while True:
 
     client_msg = client_socket.recv(BUFSIZE)
 
-    print(f"Mensaje recibido:\n{client_msg.decode()}")
+    print(f"Mensaje recibido:\n{client_msg}")
 
     msg_respuesta = "Mensaje recibido" + END_OF_MSG
     client_socket.send(msg_respuesta.encode())
