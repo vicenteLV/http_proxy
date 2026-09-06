@@ -4,7 +4,9 @@ from server_aux import *
 BUFSIZE = 1024
 END_OF_MSG = "\n"
 
-server_ad = ("192.168.100.137", 8000)
+server_address = "192.168.100.137"
+
+server_ad = (server_address, 8000)
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind(server_ad)
@@ -15,9 +17,9 @@ print("Esperando clientes ...")
 while True:
     client_socket, client_ad = server_socket.accept()
 
-    client_msg = server_socket.recv(BUFSIZE)
+    client_msg = client_socket.recv(BUFSIZE)
 
-    print(f"Mensaje recibido: {client_msg.decode()}")
+    print(f"Mensaje recibido:\n{client_msg.decode()}")
 
     msg_respuesta = "Mensaje recibido" + END_OF_MSG
     client_socket.send(msg_respuesta.encode())
