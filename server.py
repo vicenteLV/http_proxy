@@ -4,7 +4,7 @@ from server_aux import *
 BUFSIZE = 1024
 END_OF_MSG = "\n"
 
-server_address = "192.168.100.137"
+server_address = "0.0.0.0" #ip maquina virtual
 
 server_ad = (server_address, 8000)
 
