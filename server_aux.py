@@ -1,6 +1,14 @@
 import socket
 
+#CTTES
 BUFSIZE = 1024
+SERVER_NAME = "HTTP_REDES"
+HTTP_VERSION = "HTTP/1.1"
+
+#dict for code answer pairs
+cod_ans = {
+    "200": "OK"
+}
 
 
 def parse_HTTP_message(http_message: bytes) -> dict:
@@ -42,6 +50,31 @@ def create_HTTP_message(http_struct: dict) -> bytes:
     http_msg += http_struct["BODY"]
 
     return http_msg.encode()
+
+def create_response(method: str, route: str, code: str = "200",
+                    http_version: str = HTTP_VERSION) -> bytes:
+    """str str str str -> bytes
+    takes method and route and it generates a response with help from
+    create_HTTP_message() depending on the response code number"""
+    resp_dict = {}    #dict for http message formating
+    rt = "." + route
+
+    if method == "GET":
+        if rt == "./":
+            with open(f"{rt}content/main.html") as file:
+                cont = file.read()
+
+            cont_bytes = cont.encode()
+            len_bodyResponse = len(cont_bytes)
+
+            #startline
+            resp_dict["startline"] = f"{http_version} {code} {cod_ans[code]}" 
+
+            #head
+            resp_dict["HEAD"]
+
+
+
 
 
 def obtain_date(url: str = "cc4303.bachmann.cl") -> str:

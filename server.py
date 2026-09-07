@@ -30,7 +30,7 @@ while True:
     #print(f"Mensaje recibido:\n{client_msg}")
 
     #extract info from dict
-    http_request = parse_HTTP_message(client_msg.decode())
+    http_request = parse_HTTP_message(client_msg)
     startline_list = http_request["startline"].split(" ")
     q_method = startline_list[0]
     q_route = startline_list[1]
@@ -48,7 +48,7 @@ while True:
         #startline
         code = "200"
         code_msg = cod_ans[code]
-        response_startline = q_version + code + code_msg + "\r\n"
+        response_startline = f"{q_version} {code} {code_msg}\r\n"
         response += response_startline
 
         #head
@@ -58,7 +58,7 @@ while True:
         response += "Content-Length: " + str(len_bodyResponse) + "\r\n"
         response += "Connection: keep-alive\r\n"
 
-        reponse += "\r\n"
+        response += "\r\n"
 
         #Body
         response += cont
