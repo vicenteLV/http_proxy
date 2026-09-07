@@ -42,8 +42,9 @@ def create_HTTP_message(http_struct: dict) -> bytes:
 
     http_msg += f"{http_struct["startline"]}\r\n"
 
-    for i in range(len(http_struct["headers"])):
-        http_msg += f"{http_struct["headers"][i]}\r\n"
+    for header, description in http_struct["HEAD"].items():
+        http_msg += f"{header}: {description}\r\n"
+
 
     http_msg += "\r\n" #double \r\n after final header
 
@@ -68,10 +69,23 @@ def create_response(method: str, route: str, code: str = "200",
             len_bodyResponse = len(cont_bytes)
 
             #startline
-            resp_dict["startline"] = f"{http_version} {code} {cod_ans[code]}" 
+            resp_dict["startline"] = f"{http_version} {code} {cod_ans[code]}"
 
             #head
-            resp_dict["HEAD"]
+            resp_dict["HEAD"] = {}
+            resp_dict["HEAD"]["Server"] = SERVER_NAME
+            resp_dict["HEAD"]["Date"] = obtain_date()
+            resp_dict["HEAD"]["Content-Type"] = "text/html; charset=utf-8"
+            resp_dict["HEAD"]["Content-Length"] = str(len_bodyResponse)
+            resp_dict["HEAD"]["Connection"] = "keep-alive"
+
+            #body
+            resp_dict["BODY"] = cont
+
+            response = create_HTTP_message(resp_dict)
+
+            return response
+
 
 
 

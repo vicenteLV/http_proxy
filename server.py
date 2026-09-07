@@ -21,7 +21,6 @@ server_socket.listen(3)
 print("Esperando clientes ...")
 
 while True:
-    response = ""
 
     client_socket, client_ad = server_socket.accept()
 
@@ -37,33 +36,9 @@ while True:
     q_version = startline_list[2]
     print(f"Method: {q_method}, route: {q_route}, version http: {q_version}")
 
-    if q_method == "GET" and q_route == "/":
+    response = create_response(q_method, q_route)
 
-        with open("./content/response.html") as file:
-            cont = file.read()
-
-        cont_bytes = cont.encode()
-        len_bodyResponse = len(cont_bytes)
-
-        #startline
-        code = "200"
-        code_msg = cod_ans[code]
-        response_startline = f"{q_version} {code} {code_msg}\r\n"
-        response += response_startline
-
-        #head
-        response += "Server: http_proxy_redes\r\n"   #Server
-        response += "Date: " + obtain_date() + "\r\n"
-        response += "Content-Type: text/html; charset=utf-8\r\n"
-        response += "Content-Length: " + str(len_bodyResponse) + "\r\n"
-        response += "Connection: keep-alive\r\n"
-
-        response += "\r\n"
-
-        #Body
-        response += cont
-
-        client_socket.send(response.encode())
+    client_socket.send(response.encode())
 
         
 
