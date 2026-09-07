@@ -43,7 +43,7 @@ while True:
     header_user = CONF_JSON["user"]
     response = create_response(q_method, q_route, header_user)
 
-    client_socket.send(response.encode())
+    client_socket.send(response)
 
         
 
