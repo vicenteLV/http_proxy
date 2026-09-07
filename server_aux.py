@@ -1,9 +1,11 @@
 import socket
+import json
 
 #CTTES
 BUFSIZE = 1024
 SERVER_NAME = "HTTP_REDES"
 HTTP_VERSION = "HTTP/1.1"
+
 
 #dict for code answer pairs
 cod_ans = {
@@ -52,11 +54,12 @@ def create_HTTP_message(http_struct: dict) -> bytes:
 
     return http_msg.encode()
 
-def create_response(method: str, route: str, code: str = "200",
+
+def create_response(method: str, route: str, user: str, code: str = "200",
                     http_version: str = HTTP_VERSION) -> bytes:
-    """str str str str -> bytes
+    """str str str str str-> bytes
     takes method and route and it generates a response with help from
-    create_HTTP_message() depending on the response code number"""
+    create_HTTP_message() depending on the response code number, adds header for user"""
     resp_dict = {}    #dict for http message formating
     rt = "." + route
 
@@ -80,7 +83,8 @@ def create_response(method: str, route: str, code: str = "200",
             resp_dict["HEAD"]["Connection"] = "keep-alive"
 
             #additional header
-            resp_dict["HEAD"]["X-ElQuePregunta"] = "Vicente López Vergara"
+
+            resp_dict["HEAD"]["X-ElQuePregunta"] = user
 
             #body
             resp_dict["BODY"] = cont
@@ -88,10 +92,6 @@ def create_response(method: str, route: str, code: str = "200",
             response = create_HTTP_message(resp_dict)
 
             return response
-
-
-
-
 
 
 def obtain_date(url: str = "cc4303.bachmann.cl") -> str:
@@ -111,6 +111,14 @@ def obtain_date(url: str = "cc4303.bachmann.cl") -> str:
     date_socket.close()
 
     return received_decoded["HEAD"]["Date"]
+
+
+def open_json(route: str) -> dict:
+    with open(route) as file:
+        data_dict = json.load(file)
+
+    return data_dict
+
 
 
 if __name__ == "__main__":

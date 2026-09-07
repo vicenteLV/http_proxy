@@ -1,9 +1,13 @@
 import socket
+import sys
 from server_aux import *
 
 #CTTES
 BUFSIZE = 1024
 END_OF_MSG = "\n"
+
+conf_json_name = sys.argv[1]    #block.json
+CONF_JSON = open_json(f"./json/{conf_json_name}.json")
 
 #dict for code answer pairs
 cod_ans = {
@@ -36,7 +40,8 @@ while True:
     q_version = startline_list[2]
     print(f"Method: {q_method}, route: {q_route}, version http: {q_version}")
 
-    response = create_response(q_method, q_route)
+    header_user = CONF_JSON["user"]
+    response = create_response(q_method, q_route, header_user)
 
     client_socket.send(response.encode())
 
