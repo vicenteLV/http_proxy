@@ -55,43 +55,30 @@ def create_HTTP_message(http_struct: dict) -> bytes:
     return http_msg.encode()
 
 
-def create_response(method: str, route: str, user: str, code: str = "200",
+def create_response(client_msg: bytes, user: str, proxy_to_server:socket.socket, code: str = "200",
                     http_version: str = HTTP_VERSION) -> bytes:
-    """str str str str str-> bytes
-    takes method and route and it generates a response with help from
-    create_HTTP_message() depending on the response code number, adds header for user"""
-    resp_dict = {}    #dict for http message formating
-    rt = "." + route
+    """bytes str str str-> bytes
+    takes msg in bytes and generates dict for information for a response with help from
+    create_HTTP_message() , 
+    adds header for user"""
+    dictionary = parse_HTTP_message(client_msg)
+    startline_list = dictionary["startline"].split(" ")
+    q_method = startline_list[0]
+    q_route = startline_list[1]
+    q_version = startline_list[2]
 
-    if method == "GET":
-        if rt == "./":
-            with open(f"{rt}content/main.html") as file:
-                cont = file.read()
+    domain = dictionary["HEAD"]["Host"]
+    proxy_to_server.connect((domain, 80))
+    proxy_to_server.send(client_msg)
 
-            cont_bytes = cont.encode()
-            len_bodyResponse = len(cont_bytes)
+    server_resp_bytes = proxy_to_server.recv(BUFSIZE)
+    server_resp_dict = parse_HTTP_message(server_resp_bytes)
 
-            #startline
-            resp_dict["startline"] = f"{http_version} {code} {cod_ans[code]}"
+    #add header
+    server_resp_dict["HEAD"]["X-ElQuePregunta"] = user
+    proxy_response = create_HTTP_message(server_resp_dict) 
 
-            #head
-            resp_dict["HEAD"] = {}
-            resp_dict["HEAD"]["Server"] = SERVER_NAME
-            resp_dict["HEAD"]["Date"] = obtain_date()
-            resp_dict["HEAD"]["Content-Type"] = "text/html; charset=utf-8"
-            resp_dict["HEAD"]["Content-Length"] = str(len_bodyResponse)
-            resp_dict["HEAD"]["Connection"] = "keep-alive"
-
-            #additional header
-
-            resp_dict["HEAD"]["X-ElQuePregunta"] = user
-
-            #body
-            resp_dict["BODY"] = cont
-
-            response = create_HTTP_message(resp_dict)
-
-            return response
+    return proxy_response
 
 
 def obtain_date(url: str = "cc4303.bachmann.cl") -> str:
