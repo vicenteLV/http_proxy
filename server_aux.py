@@ -79,6 +79,9 @@ def create_response(method: str, route: str, code: str = "200",
             resp_dict["HEAD"]["Content-Length"] = str(len_bodyResponse)
             resp_dict["HEAD"]["Connection"] = "keep-alive"
 
+            #additional header
+            resp_dict["HEAD"]["X-ElQuePregunta"] = "Vicente López Vergara"
+
             #body
             resp_dict["BODY"] = cont
 
