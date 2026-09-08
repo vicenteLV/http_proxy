@@ -92,6 +92,31 @@ def create_response(client_msg: bytes, user: str, proxy_to_server:socket.socket,
         if forbidden[i][-1] != "/":
             forbidden[i] += "/"
 
+    if "/img/403.jpg" in url:
+        try:
+            with open("../img/403.jpg", "rb") as f:
+                img_bytes = f.read()
+            code = "200"
+            img_response_dict = {}
+            img_response_dict["startline"] = f"{q_version} {code} {cod_ans[code]}"
+
+            img_response_dict["HEAD"] = {}
+            img_response_dict["HEAD"]["Server"] = SERVER_NAME
+            img_response_dict["HEAD"]["Date"] = obtain_date()
+            img_response_dict["HEAD"]["Content-Type"] = "image/jpg"
+            img_response_dict["HEAD"]["Content-Length"] = str(len(img_bytes))
+            img_response_dict["HEAD"]["Connection"] = "keep-alive"
+
+            img_response_dict["BODY"] = img_bytes
+
+            img_response = create_HTTP_message(img_response_dict)
+
+            return img_response
+
+        except FileNotFoundError:
+            return "Img not found"
+
+
 
     #error
     if url in forbidden:

@@ -32,6 +32,8 @@ while True:
 
     client_msg = client_proxy_socket.recv(BUFSIZE)
 
+    print(client_msg)
+
     #creation of additional socket
     proxy_server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
