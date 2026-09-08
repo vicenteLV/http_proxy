@@ -107,14 +107,15 @@ def create_response(client_msg: bytes, user: str, proxy_to_server:socket.socket,
             img_response_dict["HEAD"]["Content-Length"] = str(len(img_bytes))
             img_response_dict["HEAD"]["Connection"] = "keep-alive"
 
-            img_response_dict["BODY"] = img_bytes
+            img_response_dict["BODY"] = ""
 
             img_response = create_HTTP_message(img_response_dict)
+            img_response_final = img_response + img_bytes
 
-            return img_response
+            return img_response_final
 
         except FileNotFoundError:
-            return "Img not found"
+            return "Img not found".encode()
 
 
 
