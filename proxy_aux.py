@@ -6,11 +6,22 @@ BUFSIZE = 1024
 SERVER_NAME = "HTTP_REDES"
 HTTP_VERSION = "HTTP/1.1"
 
+HTML403 = "./content/error403.html"
+
 
 #dict for code answer pairs
 cod_ans = {
-    "200": "OK"
+    "200": "OK",
+    "403": "Forbidden"
 }
+
+def file_to_txt(rt: str) -> str:
+    """str -> str
+    receives a route to file and gives back its content as a plain text"""
+    with open(rt) as file:
+        cont = file.read()
+
+    return cont
 
 
 def parse_HTTP_message(http_message: bytes) -> dict:
@@ -55,12 +66,13 @@ def create_HTTP_message(http_struct: dict) -> bytes:
     return http_msg.encode()
 
 
-def create_response(client_msg: bytes, user: str, proxy_to_server:socket.socket, code: str = "200",
+def create_response(client_msg: bytes, user: str, proxy_to_server:socket.socket, forbidden: list,
                     http_version: str = HTTP_VERSION) -> bytes:
-    """bytes str str str-> bytes
+    """bytes str socket list str-> bytes
     takes msg in bytes and generates dict for information for a response with help from
-    create_HTTP_message() , 
-    adds header for user"""
+    create_HTTP_message() from a given response in communication with server, 
+    adds header for user
+    uses forbidden list for blocking"""
     dictionary = parse_HTTP_message(client_msg)
     startline_list = dictionary["startline"].split(" ")
     q_method = startline_list[0]
@@ -68,17 +80,58 @@ def create_response(client_msg: bytes, user: str, proxy_to_server:socket.socket,
     q_version = startline_list[2]
 
     domain = dictionary["HEAD"]["Host"]
-    proxy_to_server.connect((domain, 80))
-    proxy_to_server.send(client_msg)
+    code = ""   #for response
 
-    server_resp_bytes = proxy_to_server.recv(BUFSIZE)
-    server_resp_dict = parse_HTTP_message(server_resp_bytes)
+    url = q_route[7:]
+    if url[-1] != "/":
+        url += "/"
 
-    #add header
-    server_resp_dict["HEAD"]["X-ElQuePregunta"] = user
-    proxy_response = create_HTTP_message(server_resp_dict) 
 
-    return proxy_response
+    for i in range(len(forbidden)):
+        print(forbidden[i])
+        if forbidden[i][-1] != "/":
+            forbidden[i] += "/"
+
+
+    #error
+    if url in forbidden:
+        print("##### PAGINA BLOQUEADA #####")
+        code = "403"
+        body403 = file_to_txt(HTML403)
+        len_body403 = len(body403.encode())
+
+        #startline 
+        error_response_dict = {}
+        error_response_dict["startline"] = f"{q_version} {code} {cod_ans[code]}"
+
+        #head
+        error_response_dict["HEAD"] = {}
+        error_response_dict["HEAD"]["Server"] = SERVER_NAME
+        error_response_dict["HEAD"]["Date"] = obtain_date()
+        error_response_dict["HEAD"]["Content-Type"] = "text/html; charset=utf-8"
+        error_response_dict["HEAD"]["Content-Length"] = str(len_body403)
+        error_response_dict["HEAD"]["Connection"] = "keep-alive"
+
+        #body
+        error_response_dict["BODY"] = body403
+
+        error_response = create_HTTP_message(error_response_dict)
+
+        return error_response
+
+    else:
+        code = "200"
+        proxy_to_server.connect((domain, 80))
+        proxy_to_server.send(client_msg)
+
+        server_resp_bytes = proxy_to_server.recv(BUFSIZE)
+        server_resp_dict = parse_HTTP_message(server_resp_bytes)
+
+        #add header
+        server_resp_dict["HEAD"]["X-ElQuePregunta"] = user
+        proxy_response = create_HTTP_message(server_resp_dict) 
+
+        return proxy_response
 
 
 def obtain_date(url: str = "cc4303.bachmann.cl") -> str:
