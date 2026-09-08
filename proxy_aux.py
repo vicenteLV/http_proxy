@@ -148,7 +148,9 @@ def create_response(client_msg: bytes, user: str, proxy_to_server:socket.socket,
     else:
         code = "200"
         proxy_to_server.connect((domain, 80))
-        proxy_to_server.send(client_msg)
+        dictionary["HEAD"]["X-ElQuePregunta"] = user
+        query_to_server = create_HTTP_message(dictionary)
+        proxy_to_server.send(query_to_server)
 
         server_resp_bytes = proxy_to_server.recv(BUFSIZE)
         server_resp_dict = parse_HTTP_message(server_resp_bytes)
