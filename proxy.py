@@ -16,9 +16,9 @@ cod_ans = {
     "200": "OK"
 }
 
-proxy_address = "0.0.0.0" 
+proxy_ip = "0.0.0.0" 
 
-proxy_ad = (proxy_address, 8000)
+proxy_ad = (proxy_ip, 8000)
 
 proxy_listening_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 proxy_listening_socket.bind(proxy_ad)
@@ -34,7 +34,7 @@ while True:
 
     print(client_msg)
 
-    #creation of additional socket
+    #connection to server
     proxy_server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     header_user = CONF_JSON["user"]

@@ -82,7 +82,7 @@ def create_response(client_msg: bytes, user: str, proxy_to_server:socket.socket,
     domain = dictionary["HEAD"]["Host"]
     code = ""   #for response
 
-    url = q_route[7:]
+    url = q_route[7:] #skip http://
     if url[-1] != "/":
         url += "/"
 
@@ -91,7 +91,7 @@ def create_response(client_msg: bytes, user: str, proxy_to_server:socket.socket,
         print(forbidden[i])
         if forbidden[i][-1] != "/":
             forbidden[i] += "/"
-
+    """
     if "/img/403.jpg" in url:
         try:
             with open("../img/403.jpg", "rb") as f:
@@ -116,8 +116,7 @@ def create_response(client_msg: bytes, user: str, proxy_to_server:socket.socket,
 
         except FileNotFoundError:
             return "Img not found".encode()
-
-
+    """
 
     #error
     if url in forbidden:
